@@ -131,8 +131,7 @@ class ShoppingCart(models.Model):
         Recipe,
         on_delete=models.CASCADE,
         related_name="shopping_cart",
-        verbose_name="Рецепты"
-        )
+        verbose_name="Рецепты")
 
     class Meta:
         verbose_name = "Корзина покупок"

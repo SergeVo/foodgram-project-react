@@ -7,7 +7,6 @@ from recipes.models import Ingredient
 
 
 class Command(BaseCommand):
-    """Обработчик менеджмент-команды по импорту csv-данных в БД."""
 
     def handle(self, *args, **options):
         data_path = path.join(STATIC_ROOT, 'data')

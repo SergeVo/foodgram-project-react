@@ -4,6 +4,7 @@ from recipes.models import (FavoritesList, Ingredient, Recipe,
                             RecipeIngredient, ShoppingCart, Tag)
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
+from django.core.validators import RegexValidator
 from users.models import Follow, User
 
 
@@ -28,9 +29,26 @@ class CustomUserSerializer(UserSerializer):
 class CustomUserCreateSerializer(UserCreateSerializer):
     """Сериализатор создания пользователей."""
 
+    username_validator = RegexValidator(
+        regex=r'^[\w.@+-]+$',
+        message=(
+            'Username должен содержать только буквы, цифры, '
+            'и следующие символы: @ . + -'
+        ),
+    )
+
     class Meta(UserCreateSerializer.Meta):
-        fields = ("id", "email", "username",
-                  "first_name", "last_name", "password")
+        fields = ("id",
+                  "email",
+                  "username",
+                  "first_name",
+                  "last_name",
+                  "password"
+                  )
+    username = serializers.CharField(
+        validators=[username_validator],
+        max_length=150,
+    )
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -67,7 +85,8 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     """Сериализатор чтения рецептов."""
 
     tags = TagSerializer(many=True)
-    ingredients = RecipeIngredientSerializer(many=True)
+    ingredients = RecipeIngredientSerializer(many=True,
+                                             source="recipe_ingredients")
     author = CustomUserSerializer(read_only=True)
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField()
@@ -75,7 +94,15 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = "__all__"
+        fields = fields = ("id",
+                           "tags",
+                           "ingredients",
+                           "author",
+                           "is_favorited",
+                           "is_in_shopping_cart",
+                           "image",
+                           "text",
+                           "cooking_time")
 
     def get_ingredients(self, instance):
         return RecipeIngredientSerializer(
@@ -86,9 +113,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         user = self.context.get("request").user
         if user.is_anonymous:
             return False
-        return FavoritesList.objects.filter(
-            recipe=obj,
-            user=user).exists()
+        return FavoritesList.objects.filter(recipe=obj, user=user).exists()
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context.get("request").user

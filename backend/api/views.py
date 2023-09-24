@@ -34,6 +34,21 @@ class TagViewSet(viewsets.ModelViewSet):
     permission_classes = (AllowAny,)
     pagination_class = None
 
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data,
+                                         partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
 
 class CustomUserViewSet(UserViewSet):
     """Пользователи."""
@@ -83,10 +98,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = LimitPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-
-    def __init__(self, **kwargs):
-        self.queryset = Recipe.objects.all()
-        super().__init__(**kwargs)
+    serializer_class = RecipeReadSerializer
 
     def get_serializer_class(self):
         if self.request.method in ["POST", "PATCH"]:
@@ -98,7 +110,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=True,
         permission_classes=[IsAuthenticated]
     )
-    def favorite(self, request, pk=None):
+    def favorite(self, request, pk: int = None):
         recipe = self.get_object()
         user = request.user
         if request.method == "POST":

@@ -1,6 +1,8 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from users.models import User
+from django.core.exceptions import ValidationError
+
 
 
 class Tag(models.Model):
@@ -22,9 +24,8 @@ class Ingredient(models.Model):
     name = models.CharField(
         max_length=200,
         verbose_name="Название ингредиента")
-    measurement_unit = models.CharField(
-        max_length=200,
-        verbose_name="Единица измерения")
+    measurement_unit = models.CharField(max_length=200,
+                                        verbose_name="Единица измерения")
 
     class Meta:
         ordering = ("name",)
@@ -91,6 +92,12 @@ class RecipeIngredient(models.Model):
     class Meta:
         verbose_name = "Количество ингредиентов"
         verbose_name_plural = "Количество ингредиентов"
+
+    def clean(self):
+        if RecipeIngredient.objects.filter(
+            recipe=self.recipe, ingredient=self.ingredient
+        ).exclude(pk=self.pk).exists():
+            raise ValidationError('Этот ингредиент уже добавлен в рецепт.')
 
 
 class FavoritesList(models.Model):

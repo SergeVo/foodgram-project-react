@@ -6,10 +6,8 @@ services:
       - pg_data:/var/lib/postgresql/data/
     env_file:
       - ../.env
-    ports:
-      - "5432:5432"
   backend:
-    build: ../backend/
+    image: sergevo1979/foodgram_backend:latest
     restart: always
     volumes:
       - static:/app/static/
@@ -22,15 +20,13 @@ services:
       - ../.env
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: sergevo1979/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
   nginx:
     image: nginx:1.19.3
     ports:
-      - "80:80"
+      - "8500:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/

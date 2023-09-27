@@ -92,7 +92,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "infra/nginx.conf, infra/docker-compose.production.yml"
+          source: "infra/nginx.conf, infra/docker-compose.production.yml, docs/redoc.html, docs/openapi-schema.yml"
           target: "foodgram"
 
       - name: executing remote ssh commands to deploy

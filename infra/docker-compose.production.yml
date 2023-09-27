@@ -13,7 +13,7 @@ services:
       - static:/app/static/
       - media:/app/media/
     ports:
-      - "8000:8000"
+      - "8100:8100"
     depends_on:
       - db
     env_file:

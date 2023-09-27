@@ -92,8 +92,12 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "infra/nginx.conf, infra/docker-compose.production.yml, docs/redoc.html, docs/openapi-schema.yml"
-          target: "foodgram"
+          script: |
+            sudo scp infra/nginx.conf ${{ secrets.USER }}@${{ secrets.HOST }}:/foodgram/
+            sudo scp infra/docker-compose.production.yml ${{ secrets.USER }}@${{ secrets.HOST }}:/foodgram/
+            sudo scp docs/redoc.html ${{ secrets.USER }}@${{ secrets.HOST }}:/foodgram/
+            sudo scp docs/openapi-schema.yml ${{ secrets.USER }}@${{ secrets.HOST }}:/foodgram/
+
 
       - name: executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master

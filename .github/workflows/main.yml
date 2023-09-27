@@ -70,6 +70,7 @@ jobs:
             sudo docker-compose down
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
+            sudo docker run -v /home/***/foodgram/infra/nginx.conf:/etc/nginx/conf.d/default.conf ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env

@@ -119,7 +119,8 @@ jobs:
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py makemigrations --noinput
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate --noinput
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --no-input
-            sudo docker compose -f docker-compose.production.yml exec backend python manage.py load_data --no-input
+            sudo docker compose -f docker-compose.production.yml exec backend python manage.py load_data
+            sudo docker-compose -f docker-compose.production.yml exec backend python manage.py createsuperuser --username admin --email admin@foodgram.ru --password !123456qwerty
 
   send_message:
     runs-on: ubuntu-latest

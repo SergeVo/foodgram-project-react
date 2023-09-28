@@ -10,8 +10,8 @@ services:
     image: sergevo1979/foodgram_backend:latest
     restart: always
     volumes:
-      - static:/static/
-      - media:/media/
+      - static:/app/static/
+      - media:/app/media/
     depends_on:
       - db
     env_file:

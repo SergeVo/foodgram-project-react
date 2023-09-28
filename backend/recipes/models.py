@@ -40,7 +40,7 @@ class Tag(models.Model):
         unique=True
     )
     color = ColorField(
-        verbose_name='HEX-цвет',
+        verbose_name='HEX',
         format='hex',
         max_length=7,
         unique=True,

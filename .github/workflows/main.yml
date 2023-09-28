@@ -113,15 +113,14 @@ jobs:
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             cd infra
-
             sudo docker compose -f docker-compose.production.yml pull
-
             sudo docker compose -f docker-compose.production.yml down
             sudo docker compose -f docker-compose.production.yml up -d
-            
+            sudo docker compose -f docker-compose.production.yml exec backend python manage.py makemigrations --noinput
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate --noinput
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --no-input
-  
+            sudo docker compose -f docker-compose.production.yml exec backend python manage.py load_data --no-input
+
   send_message:
     runs-on: ubuntu-latest
     needs: deploy

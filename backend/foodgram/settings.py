@@ -9,9 +9,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'default_key')
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEGUG = False
+#DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(', ')
+#ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(', ')
+ALLOWED_HOSTS = ['servofoodgram.ru', '127.0.0.1', 'localhost']
 
 AUTH_USER_MODEL = 'users.User'
 

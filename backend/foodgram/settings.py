@@ -11,7 +11,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'default_key')
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(', ')
+#ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(', ')
+ALLOWED_HOSTS = 'servofoodgram.ru', '84.252.137.58', '127.0.0.1', 'localhost'
 
 AUTH_USER_MODEL = 'users.User'
 

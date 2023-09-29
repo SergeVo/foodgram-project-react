@@ -186,7 +186,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             ingredients_list.append(ingredient['id'])
             if int(ingredient.get('amount')) < 1:
                 raise serializers.ValidationError(
-                    'Количество ингредиента больше 0')
+                    'Количество ингредиента должно быть больше 0')
         return ingredients
 
     @staticmethod

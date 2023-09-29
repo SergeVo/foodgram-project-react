@@ -41,6 +41,7 @@ class Tag(models.Model):
     )
     color = ColorField(
         verbose_name='HEX',
+        color=ColorField(default='#FF0000'),
         format='hex',
         max_length=7,
         unique=True,

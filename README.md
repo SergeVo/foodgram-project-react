@@ -96,7 +96,7 @@ USE_SQLITE=False
 
 ## Workflow
 
-Для использования Continuous Integration (CI) и Continuous Deployment (CD): в репозитории GitHub Actions `Settings/Secrets/Actions` прописать Secrets - переменные окружения для доступа к сервисам:
+Для использования Continuous Integration (CI) и Continuous Deployment (CD): в репозитории GitHub Actions `Settings/Secrets/Actions` прописать Secrets - переменные окружения для доступа к сервисам. Они автоматически добавятся в файл .env при развертывании контейнера:
 
 ```
 DOCKER_USERNAME                # имя пользователя в DockerHub
@@ -105,7 +105,10 @@ HOST                           # ip_address сервера
 USER                           # имя пользователя
 SSH_KEY                        # приватный ssh-ключ (cat ~/.ssh/id_rsa)
 PASSPHRASE                     # кодовая фраза (пароль) для ssh-ключа
-
+DB_NAME                        # имя БД
+DB_PORT                        # порт БД
+DEBUG                          # True или False
+ALLOWED_HOSTS                  # ваши хосты
 TELEGRAM_TO                    # id телеграм-аккаунта (можно узнать у @userinfobot, команда /start)
 TELEGRAM_TOKEN                 # токен бота (получить токен можно у @BotFather, /token, имя бота)
 ```

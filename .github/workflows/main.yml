@@ -111,7 +111,10 @@ jobs:
             echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
             echo DB_HOST=${{ secrets.DB_HOST }} >> .env
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-            echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+            echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
+            echo DEBUG=${{ secrets.DEBUG }} >> .env
+            echo USE_SQLITE=${{ secrets.USE_SQLITE }} >> .env
+            
             cd infra
             sudo docker compose -f docker-compose.production.yml pull
             sudo docker compose -f docker-compose.production.yml down

@@ -111,10 +111,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
                                             request)
         return Response(serializer_data, status=status.HTTP_201_CREATED)
 
-    @action(mapping={'delete': 'delete'},
-            detail=True, methods=('delete',),
+    @action(detail=True, methods=['delete'],
             permission_classes=[IsAuthenticated])
-    def delete_from_list(self, request, prmary_key):
+    def delete_from_list(self, request, primary_key):
         ''' Удаление рецепта из списка покупок '''
         if 'favorite' in request.path:
             serializer_class = FavoriteSerializer
@@ -123,7 +122,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         queryset = serializer_class.Meta.model.objects.filter(
             user=request.user,
-            recipe=prmary_key)
+            recipe=primary_key)
         if queryset.exists():
             queryset.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -133,11 +132,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @favorite.mapping.delete
     def destroy_favorite(self, request, recipe_id):
         ''' Удаление рецепта из избранных '''
-        get_object_or_404(
+        favorite = get_object_or_404(
             Favorite,
             user=request.user,
             recipe=get_object_or_404(Recipe, id=recipe_id)
-        ).delete()
+        )
+        favorite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

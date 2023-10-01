@@ -16,7 +16,7 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(', ')
 AUTH_USER_MODEL = 'users.User'
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
+    'django.contrib.admin',
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     'recipes.apps.RecipesConfig',
     'api.apps.ApiConfig',
     "rest_framework",
-    "rest_framework.authtoken",
+    'rest_framework.authtoken',
     "django_filters",
     "djoser",
     "colorfield",
@@ -109,7 +109,6 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     "SERIALIZERS": {
-        "user_create": "api.serializers.UserCreateSerializer",
         "user": "api.serializers.UserSerializer",
         "current_user": "api.serializers.UserSerializer",
     },

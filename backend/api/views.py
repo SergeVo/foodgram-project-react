@@ -1,7 +1,6 @@
 # pylint: disable=no-member
-from django.db.models import Sum
+from django.db.models import Prefetch, Sum
 from django.http.response import HttpResponse
-from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet as BaseUserViewSet
 from rest_framework import status, viewsets
@@ -9,9 +8,9 @@ from rest_framework.decorators import action
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
+from recipes.models import (Favorite, Ingredient,
+                            IngredientRecipe, Recipe, Tag)
 
-from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                            Tag)
 from users.models import Follow, User
 
 from .filters import IngredientFilter
@@ -23,6 +22,7 @@ from .serializers import (CreateRecipeSerializer, FavoriteSerializer,
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    ''' ViewSet для ингредиентов '''
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all()
     filter_backends = (IngredientFilter, )
@@ -31,6 +31,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
+    ''' ViewSet для тегов '''
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, )
@@ -38,6 +39,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
+    ''' ViewSet для рецептов '''
     queryset = Recipe.objects.select_related('author').prefetch_related(
         Prefetch('tags', queryset=Tag.objects.all(), to_attr='tag_list'),
         Prefetch('ingredienttorecipe_set',
@@ -53,6 +55,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def send_message(ingredients):
+        ''' Формирование списка ингредиентов '''
         shopping_list = 'Купить в магазине:'
         for ingredient in ingredients:
             shopping_list += (
@@ -66,6 +69,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET'])
     def download_shopping_cart(self, request):
+        ''' Скачивание списка ингредиентов '''
         ingredients = IngredientRecipe.objects.filter(
             recipe__shopping_list__user=request.user
         ).order_by('ingredient__name').values(
@@ -75,7 +79,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return self.send_message(ingredients)
 
     @staticmethod
-    def _add_to_list(serializer, recipe, user):
+    def _add_to_list(serializer, recipe, user, request):
         context = {'request': request}
         data = {'user': user.id, 'recipe': recipe.id}
         serializer_instance = serializer(data=data, context=context)
@@ -87,26 +91,31 @@ class RecipeViewSet(viewsets.ModelViewSet):
             methods=('POST',),
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk):
+        ''' Добавление рецепта в список покупок '''
         recipe = get_object_or_404(Recipe, id=pk)
         serializer_data = self._add_to_list(ShoppingCartSerializer,
                                             recipe,
-                                            request.user)
+                                            request.user,
+                                            request)
         return Response(serializer_data, status=status.HTTP_201_CREATED)
 
     @action(detail=True,
             methods=('POST',),
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk):
+        ''' Добавление рецепта в список избранных '''
         recipe = get_object_or_404(Recipe, id=pk)
         serializer_data = self._add_to_list(FavoriteSerializer,
                                             recipe,
-                                            request.user)
+                                            request.user,
+                                            request)
         return Response(serializer_data, status=status.HTTP_201_CREATED)
 
     @action(mapping={'delete': 'delete'},
             detail=True, methods=('delete',),
             permission_classes=[IsAuthenticated])
-    def delete_from_list(self, request, pk):
+    def delete_from_list(self, request, prmary_key):
+        ''' Удаление рецепта из списка покупок '''
         if 'favorite' in request.path:
             serializer_class = FavoriteSerializer
         else:
@@ -114,7 +123,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         queryset = serializer_class.Meta.model.objects.filter(
             user=request.user,
-            recipe=pk)
+            recipe=prmary_key)
         if queryset.exists():
             queryset.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -122,16 +131,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @favorite.mapping.delete
-    def destroy_favorite(self, request, pk):
+    def destroy_favorite(self, request, recipe_id):
+        ''' Удаление рецепта из избранных '''
         get_object_or_404(
             Favorite,
             user=request.user,
-            recipe=get_object_or_404(Recipe, id=pk)
+            recipe=get_object_or_404(Recipe, id=recipe_id)
         ).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UserViewSet(BaseUserViewSet):
+    ''' ViewSet для пользователя '''
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = CustomPagination
@@ -141,9 +152,10 @@ class UserViewSet(BaseUserViewSet):
         methods=['post', 'delete'],
         permission_classes=[IsAuthenticated],
     )
-    def subscribe(self, request, id):
+    def subscribe(self, request, user_id):
+        ''' Подписка на автора '''
         user = request.user
-        author = get_object_or_404(User, pk=id)
+        author = get_object_or_404(User, pk=user_id)
 
         if request.method == 'POST':
             serializer = SubscribeListSerializer(
@@ -161,6 +173,7 @@ class UserViewSet(BaseUserViewSet):
 
     @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
+        ''' Список подписок '''
         user = request.user
         queryset = User.objects.filter(following__user=user)
         pages = self.paginate_queryset(queryset)

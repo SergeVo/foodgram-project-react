@@ -181,7 +181,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             UniqueValidator(
                 queryset=Tag.objects.all(),
                 message='Теги должны быть уникальны'
-                )
+            )
         ]
     )
     image = Base64ImageField(max_length=None)

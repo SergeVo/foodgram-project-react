@@ -29,7 +29,9 @@ class Command(BaseCommand):
             ) as data_file_tags:
                 tags_data = json.loads(data_file_tags.read())
                 for tags in tags_data:
-                    Tag.objects.get_or_create(**tags)
+                    name = tags.get("name")
+                    if not Tag.objects.filter(name=name).exists():
+                        Tag.objects.create(**tags)
 
             self.stdout.write(self.style.SUCCESS("Отлично загрузили!"))
         else:

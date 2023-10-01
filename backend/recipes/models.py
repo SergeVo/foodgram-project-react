@@ -86,7 +86,8 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         verbose_name='Ингридиенты',
-        through='IngredientRecipe'
+        through='IngredientRecipe',
+        related_name='ingredient'
     )
     tags = models.ManyToManyField(
         Tag,
@@ -94,11 +95,16 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
-        validators=[MinValueValidator(
-            MIN_COOKING_TIME, message='Время приготовления не менее 1 минуты!'
-        ), MaxValueValidator(
-            MAX_COOKING_TIME, message='Время приготовления не более 72 часов!'
-        )]
+        validators=[
+            MinValueValidator(
+                MIN_COOKING_TIME, message='Время приготовления \
+                    не менее 1 минуты!'
+            ),
+            MaxValueValidator(
+                MAX_COOKING_TIME, message='Время приготовления \
+                    не более 72 часов!'
+            )
+        ]
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
@@ -173,7 +179,7 @@ class IngredientRecipe(models.Model):
         Recipe,
         verbose_name='Рецепт',
         on_delete=models.CASCADE,
-        related_name='ingredienttorecipe'
+        related_name='ingredient_recipes'
     )
     amount = models.PositiveSmallIntegerField(
         validators=[
@@ -192,6 +198,6 @@ class IngredientRecipe(models.Model):
 
     def __str__(self):
         return (
-            f'{self.ingredient.name} :: {self.ingredient.measurement_unit}'
-            f' - {self.amount} '
+            f'{self.ingredient.name} :: {self.ingredient.measurement_unit} - '
+            f'{self.amount}'
         )

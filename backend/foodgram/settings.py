@@ -62,6 +62,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': 'mydatabase.sqlite3',  # Путь к файлу SQLite
+#     }
+# }
 
 if os.getenv('USE_SQLITE', 'False') == 'True':
     DATABASES = {

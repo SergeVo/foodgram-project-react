@@ -128,16 +128,16 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     """ Сериализатор просмотра рецепта """
     tags = TagSerializer(read_only=False, many=True)
     author = UserSerializer(read_only=True, many=False)
-    ingredients = IngredientRecipeSerializer(
+    ingredients_list = IngredientRecipeSerializer(
         many=True,
-        source='ingredienttorecipe')
+        source='ingredientrecipe')
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
     image = Base64ImageField(max_length=None)
 
     class Meta:
         model = Recipe
-        fields = ('id', 'tags', 'author', 'ingredients',
+        fields = ('id', 'tags', 'author', 'ingredients_list',
                   'is_favorited', 'is_in_shopping_cart',
                   'name', 'image', 'text', 'cooking_time'
                   )

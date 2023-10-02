@@ -3,24 +3,20 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.db.models import F, Q, UniqueConstraint
 
-from utils.constants import EMAIL_LENGHT, NAME_MAX_LENGHT
-
 
 class User(AbstractUser):
     """ Модель пользователя. """
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('username', 'first_name', 'last_name', )
-    first_name = models.CharField(verbose_name='Имя',
-                                  max_length=NAME_MAX_LENGHT)
-    last_name = models.CharField(max_length=NAME_MAX_LENGHT,
-                                 verbose_name='Фамилия')
+    first_name = models.CharField(verbose_name='Имя', max_length=150)
+    last_name = models.CharField(max_length=150, verbose_name='Фамилия')
     email = models.EmailField(
-        max_length=EMAIL_LENGHT,
+        max_length=254,
         verbose_name='email',
         unique=True)
     username = models.CharField(
         verbose_name='username',
-        max_length=NAME_MAX_LENGHT,
+        max_length=150,
         unique=True,
         validators=(UnicodeUsernameValidator(), )
     )
@@ -31,7 +27,7 @@ class User(AbstractUser):
         verbose_name_plural = 'Пользователи'
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name} - {self.username}'
+        return self.username
 
 
 class Follow(models.Model):
@@ -65,4 +61,4 @@ class Follow(models.Model):
         verbose_name_plural = 'Подписки'
 
     def __str__(self) -> str:
-        return f'{self.user} подписан на {self.author}'
+        return f"{self.user} подписан на {self.author}"

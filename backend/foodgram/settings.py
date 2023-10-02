@@ -9,14 +9,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'default_key')
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
-
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(', ')
+# DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = True
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(', ')
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'users.User'
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
+    'django.contrib.admin',
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -26,7 +27,7 @@ INSTALLED_APPS = [
     'recipes.apps.RecipesConfig',
     'api.apps.ApiConfig',
     "rest_framework",
-    "rest_framework.authtoken",
+    'rest_framework.authtoken',
     "django_filters",
     "djoser",
     "colorfield",
@@ -62,25 +63,31 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydatabase.sqlite3',
+    }
+}
 
-if os.getenv('USE_SQLITE', 'False') == 'True':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('POSTGRES_DB', 'django'),
-            'USER': os.getenv('POSTGRES_USER', 'django'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-            'HOST': os.getenv('DB_HOST', ''),
-            'PORT': os.getenv('DB_PORT', '5432')
-        }
-    }
+# if os.getenv('USE_SQLITE', 'False') == 'True':
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': BASE_DIR / 'db.sqlite3',
+#         }
+#     }
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': os.getenv('POSTGRES_DB', 'django'),
+#             'USER': os.getenv('POSTGRES_USER', 'django'),
+#             'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+#             'HOST': os.getenv('DB_HOST', ''),
+#             'PORT': os.getenv('DB_PORT', '5432')
+#         }
+#     }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -109,7 +116,6 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     "SERIALIZERS": {
-        "user_create": "api.serializers.UserCreateSerializer",
         "user": "api.serializers.UserSerializer",
         "current_user": "api.serializers.UserSerializer",
     },

@@ -1,7 +1,15 @@
 from colorfield.fields import ColorField
-from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
+
+from common.constants import (
+    MAX_LENGTH,
+    MAX_TIME,
+    MAX_VALUE,
+    MIN_TIME,
+    MIN_VALUE
+)
 from users.models import User
 
 
@@ -13,13 +21,14 @@ class Ingredient(models.Model):
         db_index=True
     )
     measurement_unit = models.CharField(
-        max_length=200,
+        max_length=MAX_LENGTH,
         verbose_name='Еденицы измерения'
     )
 
     class Meta():
         verbose_name = 'Ингридиенты'
         verbose_name_plural = 'Ингридиенты'
+        ordering = ('name',)
         constraints = [
             models.UniqueConstraint(
                 fields=['name', 'measurement_unit'],
@@ -45,15 +54,10 @@ class Tag(models.Model):
         format='hex',
         max_length=7,
         unique=True,
-        validators=[
-            RegexValidator(
-                regex="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
-                message='Проверьте валидность формата',
-            )
-        ],
+
     )
     slug = models.SlugField(
-        max_length=200,
+        max_length=MAX_LENGTH,
         verbose_name='Slug',
         unique=True
     )
@@ -64,7 +68,7 @@ class Tag(models.Model):
         verbose_name_plural = 'Теги'
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class Recipe(models.Model):
@@ -95,9 +99,13 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
-        validators=[MinValueValidator(
-            1, message='Время приготовления не менее 1 минуты! Сырое не едим!'
-        )]
+        validators=[
+            MinValueValidator(
+                MIN_TIME,
+                message=f'Время приготовления не менее {MIN_TIME} минуты!'),
+            MaxValueValidator(
+                MAX_TIME,
+                message=f'Время приготовления не более {MAX_TIME} минуты!')]
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
@@ -110,7 +118,7 @@ class Recipe(models.Model):
         verbose_name_plural = 'Рецепты'
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class FavoriteShoppingCart(models.Model):
@@ -172,8 +180,14 @@ class IngredientRecipe(models.Model):
         related_name='ingredienttorecipe'
     )
     amount = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1)],
-        verbose_name='Количество ингредиента'
+        verbose_name='Количество ингредиента',
+        validators=[
+            MinValueValidator(
+                MIN_VALUE,
+                message=f'Значение не менее {MIN_VALUE} !'),
+            MaxValueValidator(
+                MAX_VALUE,
+                message=f'Значение не более {MAX_VALUE} !')]
     )
 
     class Meta:

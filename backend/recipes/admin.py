@@ -1,7 +1,13 @@
 from django.contrib import admin
 
-from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                     ShoppingCart, Tag)
+from .models import (
+    Favorite,
+    Ingredient,
+    IngredientRecipe,
+    Recipe,
+    ShoppingCart,
+    Tag
+)
 
 
 class IngredientInline(admin.TabularInline):
@@ -33,36 +39,44 @@ class RecipeAdmin(admin.ModelAdmin):
     get_ingredients.short_description = 'Ингридиенты'
 
 
+@admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     """ Админ панель управление ингридиентами """
     list_display = ('name', 'measurement_unit')
     search_fields = ('name', )
     list_filter = ('name', )
+    ordering = ('name', )
 
 
+@admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     """ Админ панель управление тегами """
     list_display = ('name', 'color', 'slug')
     search_fields = ('name', 'slug')
-    list_filter = ('name', )
+    list_filter = ('name',)
+    ordering = ('name',)
 
 
+@admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     """ Админ панель управление подписками """
     list_display = ('user', 'recipe')
     list_filter = ('user', 'recipe')
     search_fields = ('user', 'recipe')
+    ordering = ('-id',)
 
 
+@admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     """ Админ панель списка покупок """
     list_display = ('recipe', 'user')
     list_filter = ('recipe', 'user')
     search_fields = ('user', )
     empty_value_display = '-пусто-'
+    ordering = ('-id',)
 
 
-admin.site.register(ShoppingCart, ShoppingCartAdmin)
-admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Favorite, FavoriteAdmin)
+# admin.site.register(ShoppingCart, ShoppingCartAdmin)
+# admin.site.register(Ingredient, IngredientAdmin)
+# admin.site.register(Tag, TagAdmin)
+# admin.site.register(Favorite, FavoriteAdmin)

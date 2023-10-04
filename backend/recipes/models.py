@@ -1,7 +1,10 @@
-from colorfield.fields import ColorField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
+
+from rest_framework import serializers
+
+from colorfield.fields import ColorField
 
 from common.constants import (
     MAX_LENGTH,
@@ -10,13 +13,14 @@ from common.constants import (
     MIN_TIME,
     MIN_VALUE
 )
+
 from users.models import User
 
 
 class Ingredient(models.Model):
     """ Ингридиент. """
     name = models.CharField(
-        max_length=200,
+        max_length=MAX_LENGTH,
         verbose_name='Название ингридиента',
         db_index=True
     )
@@ -81,7 +85,7 @@ class Recipe(models.Model):
     )
     name = models.CharField(
         verbose_name='Название',
-        max_length=200,
+        max_length=MAX_LENGTH,
     )
     image = models.ImageField(
         upload_to='recipes/image/',

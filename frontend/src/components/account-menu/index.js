@@ -20,6 +20,7 @@ const AccountMenu = ({ onSignOut }) => {
       />
     </div>
   }
+  
   return <div className={styles.menu}>
     <LinkComponent
       className={styles.menuLink}

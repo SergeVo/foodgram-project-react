@@ -1,5 +1,5 @@
 [
-    {"id": 4, "name": "Завтрак", "color": "#1045C6", "slug": "break"},
-    {"id": 5, "name": "Обед", "color": "#C96B19", "slug": "dinner"},
-    {"id": 6, "name": "Ужин", "color": "#8476C5", "slug": "supper"}
+    {"id": 9, "name": "Завтрак", "color": "#1045C6", "slug": "break"},
+    {"id": 10, "name": "Обед", "color": "#C96B19", "slug": "dinner"},
+    {"id": 11, "name": "Ужин", "color": "#8476C5", "slug": "supper"}
 ]

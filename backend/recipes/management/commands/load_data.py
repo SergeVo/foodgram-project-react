@@ -13,14 +13,14 @@ class Command(BaseCommand):
         self.stdout.write(self.style.WARNING('Загружаем ингридиенты!'))
         ingredients_file_path = 'data/ingredients.json'
         if os.path.exists(ingredients_file_path):
-            with open(ingredients_file_path, encoding='utf-8') as data_file_ingredients:
+            with open(ingredients_file_path,
+                      encoding='utf-8') as data_file_ingredients:
                 ingredient_data = json.load(data_file_ingredients)
                 for ingredients in ingredient_data:
                     Ingredient.objects.get_or_create(**ingredients)
         else:
             self.stdout.write(
-                self.style.ERROR('Файл с ингредиентами не найден!')
-                )
+                self.style.ERROR('Файл с ингредиентами не найден!'))
 
         self.stdout.write(self.style.WARNING('Загружаем тэги!'))
         tags_file_path = 'data/tags.json'

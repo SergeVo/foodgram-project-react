@@ -2,8 +2,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
-from rest_framework import serializers
-
 from colorfield.fields import ColorField
 
 from common.constants import (

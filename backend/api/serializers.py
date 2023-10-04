@@ -23,8 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
         return not request.user.is_anonymous and obj.following.filter(
-            user=request.user).exists(
-            )
+            user=request.user).exists()
 
 
 class SubscribeCreateSerializer(UserSerializer):
@@ -160,9 +159,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     )
     image = Base64ImageField(max_length=None)
     author = UserSerializer(read_only=True)
-    cooking_time = serializers.IntegerField(
-        min_value=MIN_TIME, max_value=MAX_TIME
-        )
+    cooking_time = serializers.IntegerField(min_value=MIN_TIME,
+                                            max_value=MAX_TIME)
 
     class Meta:
         model = Recipe

@@ -1,6 +1,6 @@
 # pylint: disable=no-member
 from django.db.models import Sum, Prefetch
-from django.http.response import HttpResponse
+from django.http.response import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as BaseUserViewSet
@@ -67,7 +67,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 f'({ingredient["ingredient__measurement_unit"]}) - '
                 f'{ingredient["amount"]}')
         file = 'shopping_list.txt'
-        response = HttpResponse(shopping_list, content_type='text/plain')
+        filecontent = shopping_list.encode('utf-8')
+        response = FileResponse(filecontent, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename="{file}.txt"'
         return response
 
@@ -103,12 +104,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @shopping_cart.mapping.delete
     def destroy_shopping_cart(self, request, pk):
-        get_object_or_404(
-            ShoppingCart,
-            user=request.user.id,
-            recipe=get_object_or_404(Recipe, id=pk)
-        ).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        obj = ShoppingCart.objects.filter(
+            user_id=request.user.id, recipe_id=pk)
+        if obj.exists():
+            obj.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=True,
@@ -121,12 +122,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @favorite.mapping.delete
     def destroy_favorite(self, request, pk):
-        get_object_or_404(
-            Favorite,
-            user=request.user,
-            recipe=get_object_or_404(Recipe, id=pk)
-        ).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        obj = Favorite.objects.filter(
+            user_id=request.user.id, recipe_id=pk)
+        if obj.exists():
+            obj.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserViewSet(BaseUserViewSet):
@@ -156,10 +157,12 @@ class UserViewSet(BaseUserViewSet):
 
     @subscribe.mapping.delete
     def unsubscribe(self, request, id):
-        get_object_or_404(
-            Follow, user=request.user.id, author=get_object_or_404(User, id=id)
-        ).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        obj = Follow.objects.filter(
+            user_id=request.user.id, author_id=id)
+        if obj.exists():
+            obj.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):

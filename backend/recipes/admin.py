@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 from .models import (
     Favorite,
@@ -11,7 +12,7 @@ from .models import (
 
 
 class IngredientInline(admin.TabularInline):
-    ''' Количество полей для добавления ингридиентов в админке '''
+    """ Количество полей для добавления ингридиентов в админке. """
     model = IngredientRecipe
     extra = 1
     min_num = 1
@@ -19,24 +20,34 @@ class IngredientInline(admin.TabularInline):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    ''' Админ панель управление рецептами '''
+    """ Админ панель управление рецептами. """
     list_display = ('author', 'name', 'cooking_time',
                     'get_favorites', 'get_ingredients',)
     search_fields = ('name', 'author', 'tags')
     list_filter = ('author', 'name', 'tags')
     inlines = (IngredientInline,)
 
+    @admin.display(description='Избранное')
     def get_favorites(self, obj):
-        ''' Вывод количества избранных рецептов '''
+        """ Вывод количества избранных рецептов. """
         return obj.favorites.count()
     get_favorites.short_description = 'Избранное'
 
+    @admin.display(description='Ингридиенты')
     def get_ingredients(self, obj):
-        ''' Вывод списка ингридиентов '''
+        """ Вывод списка ингридиентов. """
         return ', '.join([
             ingredients.name for ingredients
             in obj.ingredients.all()])
     get_ingredients.short_description = 'Ингридиенты'
+
+    @admin.display(description="Изображение")
+    def display_image(self, obj):
+        """ Изображение рецепта. """
+        if obj.image:
+            return mark_safe(
+                f'<img src="{obj.image.url}" width="80" height="60">')
+        return None
 
 
 @admin.register(Ingredient)
@@ -74,9 +85,3 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     search_fields = ('user', )
     empty_value_display = '-пусто-'
     ordering = ('-id',)
-
-
-# admin.site.register(ShoppingCart, ShoppingCartAdmin)
-# admin.site.register(Ingredient, IngredientAdmin)
-# admin.site.register(Tag, TagAdmin)
-# admin.site.register(Favorite, FavoriteAdmin)

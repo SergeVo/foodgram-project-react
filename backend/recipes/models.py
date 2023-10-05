@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
-
 from colorfield.fields import ColorField
 
 from common.constants import (
@@ -9,7 +8,8 @@ from common.constants import (
     MAX_TIME,
     MAX_VALUE,
     MIN_TIME,
-    MIN_VALUE
+    MIN_VALUE,
+    HEX_LENGTH
 )
 
 from users.models import User
@@ -46,7 +46,7 @@ class Tag(models.Model):
     """ Теги. """
     name = models.CharField(
         verbose_name='Название тега',
-        max_length=7,
+        max_length=MAX_LENGTH,
         db_index=True,
         unique=True
     )
@@ -54,7 +54,7 @@ class Tag(models.Model):
         verbose_name='HEX',
         default='#1045c9',
         format='hex',
-        max_length=7,
+        max_length=HEX_LENGTH,
         unique=True,
 
     )
@@ -123,7 +123,7 @@ class Recipe(models.Model):
         return str(self.name)
 
 
-class FavoriteShoppingCart(models.Model):
+class UserFavoriteRecipe(models.Model):
     """ Связывающая модель списка покупок и избранного. """
     user = models.ForeignKey(
         User,
@@ -150,19 +150,19 @@ class FavoriteShoppingCart(models.Model):
         return f'{self.user} :: {self.recipe}'
 
 
-class Favorite(FavoriteShoppingCart):
+class Favorite(UserFavoriteRecipe):
     """ Модель добавление в избраное. """
 
-    class Meta(FavoriteShoppingCart.Meta):
+    class Meta(UserFavoriteRecipe.Meta):
         default_related_name = 'favorites'
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
 
 
-class ShoppingCart(FavoriteShoppingCart):
+class ShoppingCart(UserFavoriteRecipe):
     """ Модель списка покупок. """
 
-    class Meta(FavoriteShoppingCart.Meta):
+    class Meta(UserFavoriteRecipe.Meta):
         default_related_name = 'shopping_list'
         verbose_name = 'Корзина'
         verbose_name_plural = 'Корзина'

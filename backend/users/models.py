@@ -3,25 +3,25 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.db.models import F, Q, UniqueConstraint
 
-from common.constants import MAX_LENGTH
+from common.constants import MAX_NAME, MAX_EMAIL
 
 
 class User(AbstractUser):
     """ Модель пользователя. """
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('username', 'first_name', 'last_name', )
-    first_name = models.CharField(verbose_name='Имя', max_length=MAX_LENGTH)
+    first_name = models.CharField(verbose_name='Имя', max_length=MAX_NAME)
     last_name = models.CharField(
-        max_length=MAX_LENGTH,
+        max_length=MAX_NAME,
         verbose_name='Фамилия'
     )
     email = models.EmailField(
-        max_length=MAX_LENGTH,
+        max_length=MAX_EMAIL,
         verbose_name='email',
         unique=True)
     username = models.CharField(
         verbose_name='username',
-        max_length=MAX_LENGTH,
+        max_length=MAX_NAME,
         unique=True,
         validators=(UnicodeUsernameValidator(), )
     )

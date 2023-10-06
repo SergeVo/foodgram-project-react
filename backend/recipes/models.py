@@ -123,7 +123,7 @@ class Recipe(models.Model):
         return str(self.name)
 
 
-class UserFavoriteRecipe(models.Model):
+class UserRecipe(models.Model):
     """ Связывающая модель списка покупок и избранного. """
     user = models.ForeignKey(
         User,
@@ -150,19 +150,19 @@ class UserFavoriteRecipe(models.Model):
         return f'{self.user} :: {self.recipe}'
 
 
-class Favorite(UserFavoriteRecipe):
+class Favorite(UserRecipe):
     """ Модель добавление в избраное. """
 
-    class Meta(UserFavoriteRecipe.Meta):
+    class Meta(UserRecipe.Meta):
         default_related_name = 'favorites'
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
 
 
-class ShoppingCart(UserFavoriteRecipe):
+class ShoppingCart(UserRecipe):
     """ Модель списка покупок. """
 
-    class Meta(UserFavoriteRecipe.Meta):
+    class Meta(UserRecipe.Meta):
         default_related_name = 'shopping_list'
         verbose_name = 'Корзина'
         verbose_name_plural = 'Корзина'

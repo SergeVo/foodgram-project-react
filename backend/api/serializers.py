@@ -68,7 +68,6 @@ class SubscribeListSerializer(UserSerializer):
         recipes = obj.recipes.all()
         if limit:
             try:
-                limit = int(limit)
                 recipes = recipes[: int(limit)]
             except (ValueError, TypeError):
                 pass
@@ -106,25 +105,16 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'measurement_unit', 'amount',)
 
 
-class IngredientRecipeCreateSerializer(IngredientRecipeSerializer):
+class IngredientRecipeCreateSerializer(serializers.ModelSerializer):
     """ Сериализатор создания рецепта """
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all())
     amount = serializers.IntegerField(min_value=MIN_VALUE, max_value=MAX_VALUE)
 
+    class Meta:
+        model = IngredientRecipe
+        fields = ('id', 'amount', )
 
-# class IngredientListSerializer(serializers.ListSerializer):
-#     child = IngredientRecipeCreateSerializer()
-
-#     def validate(self, data):
-#         ids = [ingredient['id'] for ingredient in data]
-#         if len(ids) != len(set(ids)):
-#             raise serializers.ValidationError(
-#                 'Ингредиенты должны быть уникальными')
-#         if not data:
-#             raise serializers.ValidationError('Отсутствуют ингредиенты')
-#         return data
-# С использованием этоой конструкции фронт просит list а получает dict
 
 class RecipeReadSerializer(serializers.ModelSerializer):
     """ Сериализатор просмотра рецепта """
@@ -156,7 +146,6 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
 class CreateRecipeSerializer(serializers.ModelSerializer):
     """ Сериализатор для создания рецепта """
-    # ingredients = IngredienListSerializer
     ingredients = IngredientRecipeCreateSerializer(
         many=True,
     )
@@ -182,7 +171,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Отсутствуют теги')
         return tags
 
-    def validate_ingredients(self, ingredients):
+    def validate(self, data):
+        ingredients = data['ingredients']
         ingredients_list = [ingredient['id'] for ingredient in ingredients]
         if len(ingredients_list) != len(set(ingredients_list)):
             raise serializers.ValidationError(

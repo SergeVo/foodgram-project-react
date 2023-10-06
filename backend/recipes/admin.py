@@ -22,7 +22,7 @@ class IngredientInline(admin.TabularInline):
 class RecipeAdmin(admin.ModelAdmin):
     """ Админ панель управление рецептами. """
     list_display = ('author', 'name', 'cooking_time',
-                    'get_favorites', 'get_ingredients',)
+                    'get_favorites', 'get_ingredients', 'display_image')
     search_fields = ('name', 'author', 'tags')
     list_filter = ('author', 'name', 'tags')
     inlines = (IngredientInline,)

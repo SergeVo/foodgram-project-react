@@ -65,11 +65,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 f'\n{ingredient["ingredient__name"]} '
                 f'({ingredient["ingredient__measurement_unit"]}) - '
                 f'{ingredient["amount"]}')
-        file = 'shopping_list.txt'
-        filecontent = shopping_list.encode('utf-8')
-        response = FileResponse(filecontent, content_type='text/plain')
-        response['Content-Disposition'] = f'attachment; filename="{file}.txt"'
-        return response
+        file_name = 'shopping_list.txt'
+        return FileResponse(
+            shopping_list,
+            content_type='text/plain',
+            as_attachment=True,
+            filename=file_name)
 
     @action(detail=False, methods=['GET'])
     def download_shopping_cart(self, request):

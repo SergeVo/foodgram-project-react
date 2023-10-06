@@ -47,7 +47,8 @@ class SubscribeCreateSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        return SubscribeListSerializer(instance, context=self.context).data
+        return SubscribeListSerializer(
+            instance.author, context=self.context).data
 
 
 class SubscribeListSerializer(UserSerializer):

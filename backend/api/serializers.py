@@ -180,7 +180,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         if not ingredients:
             raise serializers.ValidationError(
                 'Отсутствуют ингредиенты')
-        return ingredients
+        return data.ingredients
 
     def validate_image(self, image):
         if not image:
